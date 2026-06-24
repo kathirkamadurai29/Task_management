@@ -7,6 +7,7 @@ from app.schemas.user import UserCreate, UserLogin
 from app.utils.auth import hash_password,verify_password,create_access_token
 
 from app.schemas.user import UserLogin
+from app.dependencies.auth import get_current_user
 
 router = APIRouter(
     prefix="/auth",
@@ -39,19 +40,21 @@ def register(
 
     return{"message": "User registered successfully"}
 
+from fastapi.security import OAuth2PasswordRequestForm
+
 @router.post("/login")
 def login(
-    user: UserLogin, db: Session = Depends(get_db)
+    form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
 ):
     db_User = db.query(User).filter(
-        User.email == user.email
+        (User.email == form_data.username) | (User.username == form_data.username)
     ).first()
     if not db_User:
         raise HTTPException(
             status_code=401, detail= "Invalid email or password"
         )
     if not verify_password(
-        user.password, db_User.password_hash
+        form_data.password, db_User.password_hash
     ):
         raise HTTPException(
             status_code=401, detail="Invalid email or password"
@@ -63,4 +66,12 @@ def login(
     return {
         "access_token": token,
         "token_type": "bearer"
+    }
+
+@router.get("/me")
+def get_current_user_info(current_user: User = Depends(get_current_user)):
+    return {
+        "id": current_user.id,
+        "email": current_user.email,
+        "username": current_user.username
     }

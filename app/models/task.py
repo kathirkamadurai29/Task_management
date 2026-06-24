@@ -1,4 +1,5 @@
 from sqlalchemy import(Column,Integer,String,Text,DateTime,ForeignKey)
+from sqlalchemy.orm import relationship
 from datetime import datetime
 from app.database.database import Base
 
@@ -14,3 +15,6 @@ class Task(Base):
     assigned_to = Column(Integer,ForeignKey("Users.id"), nullable=True)
     created_at= Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow)
+
+    creator = relationship("User", foreign_keys=[creator_id])
+    assignee = relationship("User", foreign_keys=[assigned_to])

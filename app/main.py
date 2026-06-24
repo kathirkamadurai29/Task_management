@@ -6,6 +6,7 @@ from app.database.database import engine,Base
 from app.models.task import Task
 from app.models.user import User
 from app.routers.dashboard import router as dashboard_router
+from app.routers.users import router as users_router
 
 
 
@@ -14,6 +15,8 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
+
+app.include_router(users_router)
 app.include_router(auth_router)
 app.include_router(task_router)
 app.include_router(dashboard_router)
