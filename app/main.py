@@ -1,0 +1,24 @@
+from fastapi import FastAPI
+from app.routers.auth import router as auth_router
+import uvicorn
+from app.routers.tasks import router as task_router
+from app.database.database import engine,Base
+from app.models.task import Task
+from app.models.user import User
+from app.routers.dashboard import router as dashboard_router
+
+
+
+Base.metadata.create_all(bind=engine)
+
+
+app = FastAPI()
+
+app.include_router(auth_router)
+app.include_router(task_router)
+app.include_router(dashboard_router)
+
+@app.get("/")
+def root():
+    return {"message": "Task Management API Running"}
+
