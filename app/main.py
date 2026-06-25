@@ -11,10 +11,14 @@ from app.routers.users import router as users_router
 
 
 
-Base.metadata.create_all(bind=engine)
+from contextlib import asynccontextmanager
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    Base.metadata.create_all(bind=engine)
+    yield
 
-app = FastAPI()
+app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
