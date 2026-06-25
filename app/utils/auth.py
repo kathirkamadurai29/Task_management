@@ -1,12 +1,13 @@
 from passlib.context import CryptContext
 from jose import jwt
 from datetime import datetime, timedelta
+import os
 
 pwd_context = CryptContext(
     schemes=["pbkdf2_sha256"],
     deprecated="auto"
 )
-SECRET_KEY = "supersecretkey123"
+SECRET_KEY = os.environ.get("JWT_SECRET_KEY", "supersecretkey123")
 ALGORITHM = "HS256"
 
 def hash_password(password: str):
